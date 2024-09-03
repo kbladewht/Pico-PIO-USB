@@ -1,7 +1,12 @@
-set(target_name capture_hid_report)
-add_executable(${target_name})
 
+set(PICO_DEFAULT_BOARD_rp2040 "pico_pi")
+
+set(target_name capture_hid_report)
+add_executable(${target_name} capture_hid_report.c)
+
+# pico_add_extra_outputs(capture_hid_report)
 pico_enable_stdio_usb(${target_name} 1) 
+pico_enable_stdio_uart(${target_name} 0) 
 
 target_sources(${target_name} PRIVATE
  capture_hid_report.c
