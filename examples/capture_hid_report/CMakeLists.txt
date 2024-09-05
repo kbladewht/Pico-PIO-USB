@@ -1,8 +1,12 @@
 
-set(PICO_DEFAULT_BOARD_rp2040 "pico_pi")
+# set(PICO_DEFAULT_BOARD_rp2040 "pico_pi")
 
 set(target_name capture_hid_report)
 add_executable(${target_name} capture_hid_report.c)
+
+# 定义 USBD_PRODUCT 宏
+target_compile_definitions(${target_name} PRIVATE USBD_PRODUCT="PI_Quantizer_v1")
+
 
 # pico_add_extra_outputs(capture_hid_report)
 pico_enable_stdio_usb(${target_name} 1) 

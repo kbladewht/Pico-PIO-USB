@@ -1,6 +1,10 @@
 set(target_name host_hid_to_device_cdc)
 add_executable(${target_name})
 
+
+# 定义 USBD_PRODUCT 宏
+target_compile_definitions(${target_name} PRIVATE USBD_PRODUCT="PI_CDC_v1")
+
 target_sources(${target_name} PRIVATE
  host_hid_to_device_cdc.c
  usb_descriptors.c
@@ -13,7 +17,7 @@ target_sources(${target_name} PRIVATE
 target_link_options(${target_name} PRIVATE -Xlinker --print-memory-usage)
 target_compile_options(${target_name} PRIVATE -Wall -Wextra)
 
-# use tinyusb implementation
+# # use tinyusb implementation
 target_compile_definitions(${target_name} PRIVATE PIO_USB_USE_TINYUSB)
 
 # needed so tinyusb can find tusb_config.h

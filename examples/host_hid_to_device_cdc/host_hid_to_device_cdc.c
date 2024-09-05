@@ -63,7 +63,7 @@ const uint8_t colemak[128] = {
 };
 #endif
 
-static uint8_t const keycode2ascii[128][2] =  { HID_KEYCODE_TO_ASCII };
+// static uint8_t const keycode2ascii[128][2] =  { HID_KEYCODE_TO_ASCII };
 
 /*------------- MAIN -------------*/
 
@@ -180,50 +180,86 @@ static inline bool find_key_in_report(hid_keyboard_report_t const *report, uint8
 
   return false;
 }
+// void static print_report(const hid_keyboard_report_t *report) {
+//    // tud_cdc_write(report->keycode[0],1);
+//     printf("Modifier: 0x%02X\n", report->modifier);
+//     printf("Reserved: 0x%02X\n", report->reserved);
+//     printf("Keycodes: ");
+//     for (int i = 0; i < 6; i++) {
+//         printf("0x%02X ", report->keycode[i]);
+//     }
+//     printf("\n");
+// }
+void send_keycodes(const hid_keyboard_report_t *report) {
+    char hex_str[40];  // Buffer size for hex string including newline
+    size_t offset = 0;
 
+    // Format modifier and reserved bytes
+    offset += snprintf(hex_str + offset, sizeof(hex_str) - offset, "%02X%02X ",
+                       report->modifier, report->reserved);
 
+    // Format each keycode
+    for (size_t i = 0; i < 6; i++) {
+        offset += snprintf(hex_str + offset, sizeof(hex_str) - offset, "%02X ",
+                           report->keycode[i]);
+    }
+
+    // Add newline and null terminator
+    hex_str[offset] = '\n';
+    hex_str[offset + 1] = '\0';
+
+    // Send the formatted hex string
+    tud_cdc_write(hex_str, offset + 1);
+    tud_cdc_write_flush();
+}
 // convert hid keycode to ascii and print via usb device CDC (ignore non-printable)
 static void process_kbd_report(uint8_t dev_addr, hid_keyboard_report_t const *report)
 {
   (void) dev_addr;
-  static hid_keyboard_report_t prev_report = { 0, 0, {0} }; // previous report to check key released
-  bool flush = false;
+  // static hid_keyboard_report_t prev_report = { 0, 0, {0} }; // previous report to check key released
+  // bool flush = false;
+// 提取 keycodes 并传递给 send_hex
+    send_keycodes(report);
+//  send_hex(&keycode, 6);
+  // for(uint8_t i=0; i<6; i++)
+  // {
+  //   uint8_t keycode = report->keycode[i];
+  //   if ( keycode )
+  //   {
+  //     if ( find_key_in_report(&prev_report, keycode) )
+  //     {
+  //       // exist in previous report means the current key is holding
+  //     }else
+  //     {
+  //       // not existed in previous report means the current key is pressed
 
-  for(uint8_t i=0; i<6; i++)
-  {
-    uint8_t keycode = report->keycode[i];
-    if ( keycode )
-    {
-      if ( find_key_in_report(&prev_report, keycode) )
-      {
-        // exist in previous report means the current key is holding
-      }else
-      {
-        // not existed in previous report means the current key is pressed
+  //       // remap the key code for Colemak layout
+  //       #ifdef KEYBOARD_COLEMAK
+  //       uint8_t colemak_key_code = colemak[keycode];
+  //       if (colemak_key_code != 0) keycode = colemak_key_code;
+  //       #endif
 
-        // remap the key code for Colemak layout
-        #ifdef KEYBOARD_COLEMAK
-        uint8_t colemak_key_code = colemak[keycode];
-        if (colemak_key_code != 0) keycode = colemak_key_code;
-        #endif
+        
 
-        bool const is_shift = report->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
-        uint8_t ch = keycode2ascii[keycode][is_shift ? 1 : 0];
-
-        if (ch)
-        {
-          if (ch == '\n') tud_cdc_write("\r", 1);
-          tud_cdc_write(&ch, 1);
-          flush = true;
-        }
-      }
-    }
+  //       bool const is_shift = report->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
+        
+  //       send_hex(&keycode, 1);
+  //       uint8_t ch = keycode2ascii[keycode][is_shift ? 1 : 0];
+     
+  //       if (ch)
+  //       {
+  //         if (ch == '\n') tud_cdc_write("\r", 1);
+  //         tud_cdc_write(&ch, 1);
+  //         flush = true;
+  //       }
+  //     }
+  //   }
     // TODO example skips key released
-  }
+  // }
 
-  if (flush) tud_cdc_write_flush();
+  // if (flush) tud_cdc_write_flush();
 
-  prev_report = *report;
+  // prev_report = *report;
 }
 
 // send mouse report to usb device CDC

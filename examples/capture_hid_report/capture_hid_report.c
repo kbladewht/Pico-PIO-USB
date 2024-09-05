@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 
+
 #include "hardware/clocks.h"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/bootrom.h"
 
 #include "pio_usb.h"
-// #define USBD_PRODUCT "Pico_pet"
+
 static usb_device_t *usb_device = NULL;
 
 void core1_main() {
@@ -51,9 +52,9 @@ int main() {
                 // }
                 usb_device_t *device = &usb_device[dev_idx];
                 if (!device->connected) {
-                  //  if(count % 100000 ==0 && dev_idx == 0){
-                  //    printf("device is not connected ! %ld\n",count/100000);
-                  //  }
+                   if(count % 100000 ==0 && dev_idx == 0){
+                     printf("device is not connected ! %ld\n",count/100000);
+                   }
                   continue;
                 }
 
