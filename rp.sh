@@ -43,13 +43,14 @@ cmake ..
 print "running ninja .."
 ninja
 
-polling_check
+
 # cp /home/dellht/Pico-PIO-USB/examples/build/capture_hid_report/capture_hid_report.uf2 E:/
 
 # cp /home/dellht/Pico-PIO-USB/examples/build/host_hid_to_device_cdc/host_hid_to_device_cdc.uf2 E:/
 
 
 if [ -n "$1" ]; then
+    polling_check
     cp /home/dellht/Pico-PIO-USB/examples/build/hid_composite/hid_composite.uf2 E:/
 else
     echo "No source file provided."
